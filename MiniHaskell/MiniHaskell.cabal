@@ -27,6 +27,9 @@ library
   exposed-modules:
       Exp
       Lib
+      Parser
+      Printer
+      REPLCommand
   other-modules:
       Paths_MiniHaskell
   hs-source-dirs:

@@ -1,3 +1,5 @@
+module Parser where
+
 import Control.Applicative
 import Data.Char
 import Exp
@@ -18,6 +20,10 @@ instance Monad Parser where
 instance Alternative Parser where
     empty = Parser (\input -> [])
     p <|> p' = Parser (\input -> apply p input ++ apply p' input)
+
+
+allInput :: Parser String
+allInput = Parser (\input -> [(input, "")])
 
 
 satisfy :: (Char -> Bool) -> Parser Char
@@ -205,7 +211,7 @@ var :: Parser Var
 var = Parser go
     where
         go [] = []
-        go (x:xs) = if isAlpha x then [(Var [x], xs)]
+        go (x:xs) = if isAlpha x || elem x "~!@#$%^&*_+=|:<>.?/" then [(Var [x], xs)]
         else []
 
 
@@ -222,7 +228,7 @@ lambdaExp = do
     v <- var
     whiteSpace
     string "->"
-    expv <- basicExp
+    expv <- expr
     return (CLam v expv)
 
 
@@ -233,9 +239,9 @@ letExp = do
     v <- var
     whiteSpace
     string ":="
-    expS <- basicExp
+    expS <- expr
     string "in"
-    expT <- basicExp
+    expT <- expr
     return (Let v expS expT)
 
 
@@ -246,15 +252,15 @@ letrecExp = do
     v <- var
     whiteSpace
     string ":="
-    expS <- basicExp
+    expS <- expr
     string "in"
-    expT <- basicExp
-    return (Let v expS expT)
+    expT <- expr
+    return (LetRec v expS expT)
 
 
 listExp :: Parser ComplexExp
 listExp = do
-    vars <- brackets (commaSep basicExp)
+    vars <- brackets (commaSep expr)
     return (List vars)
 
 
@@ -265,18 +271,24 @@ natExp = do
 
 
 parenExp :: Parser ComplexExp
-parenExp = parens basicExp
+parenExp = parens expr
 
 
 basicExp :: Parser ComplexExp
 basicExp = do
     whiteSpace
-    exp <- varExp <|> lambdaExp <|> letExp <|> letrecExp <|> listExp <|> natExp <|> parenExp
+    exp <- lambdaExp <|> letExp <|> letrecExp <|> listExp <|> natExp <|> parenExp <|> varExp
     whiteSpace
     return exp
 
 
 expr :: Parser ComplexExp
 expr = do
-    whiteSpace
-    cmp <- 
+    vars <- many (whiteSpace *> basicExp)
+    if null vars then empty
+    else let (x:xs) = vars
+            in return (foldl (\b a -> CApp b a) x xs)
+
+
+exprParser :: Parser ComplexExp
+exprParser = expr <* whiteSpace
