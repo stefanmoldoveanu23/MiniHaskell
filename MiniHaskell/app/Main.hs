@@ -6,6 +6,8 @@ import System.Console.Isocline
 import Exp
 import Parser
 import Printer
+import Sugar
+import Eval
 import REPLCommand
 
 main :: IO ()
@@ -17,6 +19,8 @@ main = do
         (Load file) -> do
             putStrLn file
             main;
-        (Eval expr) -> do
-            putStrLn (showExp (testParse exprParser expr))
-            main;
+        (Eval strexpr) ->
+            let complexpr = testParse exprParser strexpr; expr = normalize (desugarExp complexpr) in
+                do
+                    putStrLn (showExp (sugarExp expr))
+                    main;

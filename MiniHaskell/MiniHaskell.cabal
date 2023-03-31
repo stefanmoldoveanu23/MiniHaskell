@@ -25,11 +25,13 @@ source-repository head
 
 library
   exposed-modules:
+      Eval
       Exp
       Lib
       Parser
       Printer
       REPLCommand
+      Sugar
   other-modules:
       Paths_MiniHaskell
   hs-source-dirs:
