@@ -1,4 +1,3 @@
-
 module Eval where
 
 import Exp
@@ -52,4 +51,5 @@ normalize (App (Lam ivar expr_1) expr_2) = normalize (substitute ivar expr_2 exp
 normalize (App expr_1 expr_2) = App (normalize expr_1) (normalize expr_2)
 normalize (Lam ivar expr) = Lam ivar (normalize expr)
 normalize expr = expr
+
 

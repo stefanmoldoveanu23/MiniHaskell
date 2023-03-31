@@ -4,7 +4,7 @@ import Exp
 
 
 desugarVar :: Var -> IndexedVar
-desugarVar (Var x) = IndexedVar x 0 
+desugarVar (Var x) = makeIndexedVar x
 
 
 sugarVar :: IndexedVar -> Var
@@ -36,4 +36,3 @@ sugarExp :: Exp -> ComplexExp
 sugarExp (X ivar) = CX (sugarVar ivar)
 sugarExp (Lam ivar expr) = CLam (sugarVar ivar) (sugarExp expr)
 sugarExp (App expr_1 expr_2) = CApp (sugarExp expr_1) (sugarExp expr_2)
-

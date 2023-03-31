@@ -13,7 +13,7 @@ data REPLCommand
 
 replQuit :: Parser REPLCommand
 replQuit = do
-    x <- (string ":q" *> whiteSpace *> endOfInput) <|> (string ":quit" *> whiteSpace *> endOfInput)
+    x <- (string ":quit" *> whiteSpace *> endOfInput) <|> (string ":q" *> whiteSpace *> endOfInput)
     return Quit
 
 
