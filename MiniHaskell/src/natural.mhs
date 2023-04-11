@@ -1,0 +1,35 @@
+import prelude.mhs;
+import bool.mhs;
+import maybe.mhs;
+
+
+zero NatFunction Index := Index;
+iter NatFunction Index Natural := Natural NatFunction Index;
+succ Natural NatFunction Index := NatFunction (iter NatFunction Index Natural);
+
+
+one := succ zero;
+
+isZero n := iter (const false) true n;
+
+add n m := iter succ n m;
+
+mul n m := iter (add n) zero m;
+
+exp n m := iter (mul n) one m;
+
+pred n := iter (maybe (just zero) (. just succ)) nothing n;
+
+sub n m := iter (maybeBind pred) (just n) m;
+
+lt n m := isNothing (sub n m);
+
+gt n m := not (isJust (sub m n));
+
+gte n m := not (lt n m);
+
+lte n m := not (gt n m);
+
+eq n m := && (lte n m) (gte n m);
+
+max n m := ite (gt n m) n m;

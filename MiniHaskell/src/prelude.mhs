@@ -1,0 +1,7 @@
+id x := x;
+
+const x y := x;
+
+flip f x y := f y x;
+
+. g f x := g (f x);

@@ -1,0 +1,20 @@
+import prelude.mhs;
+import bool.mhs;
+
+
+left Value Left Right := Left Value;
+right Value Left Right := Right Value;
+either Left Right Either := Either Left Right;
+
+
+fromLeft def eith := either id (const def) eith;
+
+fromRight def eith := either (const def) id eith;
+
+isLeft eith := either (const true) (const false) eith;
+
+isRight eith := either (const false) (const true) eith;
+
+eitherLeftMap f eith := either (. left f) right eith;
+
+eitherRightMap f eith := either left (. right f) eith;

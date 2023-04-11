@@ -1,0 +1,18 @@
+import prelude.mhs;
+import bool.mhs;
+
+
+nothing Nothing Just := Nothing;
+just x Nothing Just := Just x;
+maybe Nothing Just Maybe := Maybe Nothing Just;
+
+
+fromMaybe def mab := maybe def id mab;
+
+isNothing mab := maybe true (const false) mab;
+
+isJust mab := not (isNothing mab);
+
+maybeFMap f mab := maybe nothing (. just f) mab;
+
+maybeBind f mab := maybe nothing f mab;

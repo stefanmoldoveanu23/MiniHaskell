@@ -48,7 +48,7 @@ substitute toReplace replacement (App expr_1 expr_2) = App (substitute toReplace
 
 normalize :: Exp -> Exp
 normalize (App (Lam ivar expr_1) expr_2) = normalize (substitute ivar expr_2 expr_1)
-normalize (App expr_1 expr_2) = App (normalize expr_1) (normalize expr_2)
+normalize (App expr_1 expr_2) = normalize (App (normalize expr_1) (normalize expr_2))
 normalize (Lam ivar expr) = Lam ivar (normalize expr)
 normalize expr = expr
 

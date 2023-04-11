@@ -1,0 +1,15 @@
+import prelude.mhs;
+
+
+true False True := True;
+false False True := False;
+bool False True Bool := Bool False True;
+
+
+ite b t e := bool e t b;
+
+&& a b := ite a b false;
+
+|| a b := ite a true b;
+
+not a := ite a false true;

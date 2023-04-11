@@ -1,0 +1,14 @@
+import prelude.mhs;
+import bool.mhs;
+import maybe.mhs;
+
+
+pair First Second PairFunction := PairFunction First Second;
+uncurry Function Pair := Pair Function;
+
+
+curry f a b := f (pair a b);
+
+fst p := uncurry const p;
+
+snd p := uncurry (flip const) p;

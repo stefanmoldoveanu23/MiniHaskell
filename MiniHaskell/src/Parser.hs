@@ -199,96 +199,19 @@ identifier :: Parser Char -> Parser Char -> Parser String
 identifier identStart identLitera = lexeme (ident identStart identLitera)
 
 
-
-testParse :: Parser a -> String -> a
-testParse p s
-    = case parse p s of
-    Left err -> error (show err)
-    Right a -> a
+semi :: Parser ()
+semi = reserved ";"
 
 
-var :: Parser Var
-var = Parser go
-    where
-        go [] = []
-        go (x:xs) = if isAlpha x || elem x "~!@#$%^&*_+=|:<>.?/" then [(Var [x], xs)]
-        else []
+semiSep1 :: Parser a -> Parser [a]
+semiSep1 p = do
+    a <- p <* semi
+    as <- many (p <* semi)
+    return (a : as)
 
 
-varExp :: Parser ComplexExp
-varExp = do
-    x <- var
-    return (CX x)
-
-
-lambdaExp :: Parser ComplexExp
-lambdaExp = do
-    char '\\'
-    whiteSpace
-    v <- var
-    whiteSpace
-    string "->"
-    expv <- expr
-    return (CLam v expv)
-
-
-letExp :: Parser ComplexExp
-letExp = do
-    string "let"
-    whiteSpace
-    v <- var
-    whiteSpace
-    string ":="
-    expS <- expr
-    string "in"
-    expT <- expr
-    return (Let v expS expT)
-
-
-letrecExp :: Parser ComplexExp
-letrecExp = do
-    string "letrec"
-    whiteSpace
-    v <- var
-    whiteSpace
-    string ":="
-    expS <- expr
-    string "in"
-    expT <- expr
-    return (LetRec v expS expT)
-
-
-listExp :: Parser ComplexExp
-listExp = do
-    vars <- brackets (commaSep expr)
-    return (List vars)
-
-
-natExp :: Parser ComplexExp
-natExp = do
-    n <- natural
-    return (Nat n)
-
-
-parenExp :: Parser ComplexExp
-parenExp = parens expr
-
-
-basicExp :: Parser ComplexExp
-basicExp = do
-    whiteSpace
-    exp <- lambdaExp <|> letExp <|> letrecExp <|> listExp <|> natExp <|> parenExp <|> varExp
-    whiteSpace
-    return exp
-
-
-expr :: Parser ComplexExp
-expr = do
-    vars <- many (whiteSpace *> basicExp)
-    if null vars then empty
-    else let (x:xs) = vars
-            in return (foldl (\b a -> CApp b a) x xs)
-
-
-exprParser :: Parser ComplexExp
-exprParser = expr <* whiteSpace
+parseFromFile :: (String -> IO (Either String a)) -> FilePath -> IO (Either String a)
+parseFromFile parser file = do
+    str <- readFile file
+    sol <- parser str
+    return $ sol

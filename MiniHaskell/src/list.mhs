@@ -1,0 +1,39 @@
+import prelude.mhs;
+import bool.mhs;
+import maybe.mhs;
+import natural.mhs;
+import pair.mhs;
+
+
+nil ListFunction Nil := Nil;
+cons ListElem List ListFunction Nil := ListFunction ListElem (List ListFunction Nil);
+foldr ListFunction Nil List := List ListFunction Nil;
+
+
+++ l1 l2 := foldr cons l2 l1;
+
+length l := foldr (\a->\b->(succ b)) zero l;
+
+isNull l := isZero (length l);
+
+map f la := foldr (\a->\b->(cons (f a) b)) nil la;
+
+filter f l := foldr (\a->\b->(ite (f a) (cons a b) b)) nil l;
+
+foldl f i l := (foldr (\a->\b->(. b ((flip f) a))) id l) i;
+
+uncons l := foldr (\a->\b->(maybe (just (pair a nil)) (\p -> just (pair a (cons (fst p) (snd p)))) b)) nothing l;
+
+head l := maybe nothing (. just fst) (uncons l);
+
+tail l := maybe nothing (. just snd) (uncons l);
+
+reverse l := foldl (flip cons) nil l;
+
+sum l := foldr add zero l;
+
+product l := foldr mul one l;
+
+maximum l := foldr max zero l;
+
+natToList n := ite (isZero n) nil (cons n (natToList (fromMaybe zero (pred n))));
